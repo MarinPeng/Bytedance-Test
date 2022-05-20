@@ -38,21 +38,24 @@ class BakeInfo():
                                  error_message='超时--获取元素失败')
             page_title = self.browser.find_element(by=By.XPATH, value='//span[@class="long-title"]/h1').text
             print('当前页面的title是{}'.format(page_title))
+            # 拖动页面元素
+            self.browser.execute_script('document.documentElement.scrollTop=3000')
+            time.sleep(1)
+            self.info_parse()
         except Exception as e:
             logging.info('获取元素失败，进入页面不符合预期:{}'.format(e))
             return False
-        # 拖动页面元素
-        self.browser.execute_script('document.documentElement.scrollTop=3000')
-        time.sleep(1)
-        self.info_parse()
-        self.browser.quit()
+        finally:
+            self.browser.quit()
+
+
 
     # 数据解析入库
     def info_parse(self):
         div_list = self.browser.find_elements(by=By.XPATH,
                                               value='//div[@class="main-content J-content"]/div[@class="para"]')
         total_year = self.year_calculate()
-        result_list = []
+        result_list = [['时间','事件']]
         index = 2012
         for div in div_list:
             info = div.text.split('，')
